@@ -1,47 +1,27 @@
-#!perl
-use strict;
-use warnings;
-BEGIN {
-    unshift @INC, 'inc';
+use ExtUtils::MakeMaker;
 
-    # author requires, or bundled modules
-    my @devmods = qw(
-        inc::Module::Install             1.00
-        Module::Install::AuthorTests     0.002
-        Module::Install::Repository      0.06
-        Test::Requires                   0.06
-    );
-    my @not_available;
-    while(my($mod, $ver) = splice @devmods, 0, 2) {
-        eval qq{use $mod $ver (); 1} or push @not_available, $mod;
-    }
-    if(@not_available) {
-        print qq{# The following modules are not available.\n};
-        print qq{# `perl $0 | cpanm` will install them:\n};
-        print $_, "\n" for @not_available;
-        exit 1;
-     }
-}
-use inc::Module::Install;
-
-all_from 'lib/BloGro.pm';
-
-
-test_requires 'Test::More'     => '0.88';
-test_requires 'Test::Requires' => '0.06';
-
-auto_set_repository;
-
-tests_recursive;
-author_tests 'xt';
-
-
-clean_files qw(
-    BloGro-*
-    *.stackdump
-    cover_db *.gcov *.gcda *.gcno
-    nytprof
-    *.out
+WriteMakefile(
+    NAME          => 'BloGro',
+    AUTHOR        => 'Some Person <person@example.com>',
+    VERSION_FROM  => 'lib/BloGro.pm',
+    PREREQ_PM     => {
+        'Amon2'                           => '3.32',
+        'Text::Xslate'                    => '1.5006',
+        'Test::More'                      => '0.98',
+        'Amon2::DBI'                      => '0.06',
+        'DBD::SQLite'                     => '1.33',
+        'HTML::FillInForm::Lite'          => '1.09',
+        'JSON'                            => '2.50',
+        'Plack::Middleware::ReverseProxy' => '0.09',
+        'Plack::Middleware::Session'      => '0',
+        'Plack::Session'                  => '0.14',
+        'Test::WWW::Mechanize::PSGI'      => '0',
+        'Time::Piece'                     => '1.20',
+    },
+    MIN_PERL_VERSION => '5.008001',
+    (-d 'xt' and $ENV{AUTOMATED_TESTING} || $ENV{RELEASE_TESTING}) ? (
+        test => {
+            TESTS => 't/*.t xt/*.t',
+        },
+    ) : (),
 );
-
-WriteAll(check_nmake => 0);
