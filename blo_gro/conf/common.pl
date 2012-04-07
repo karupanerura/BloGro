@@ -5,7 +5,7 @@ use utf8;
 +{
     db => +{
         main => +{
-            dsn  => 'dbi:mysql:database=bro_gro;host=localhost;port=5522',
+            dsn  => 'dbi:mysql:database=blo_gro;host=127.0.0.1;port=5522',
             user => 'msandbox',
             pass => 'msandbox',
             attr => +{
@@ -17,4 +17,10 @@ use utf8;
             }
         },
     },
+    groonga => +{
+        protocol => 'http',
+        host     => 'localhost',
+        port     => '10041',
+    },
+    time_zone => 'Asia/Tokyo',
 };

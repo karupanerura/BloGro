@@ -14,6 +14,7 @@ use Amon2::Util;
 use File::Spec;
 use File::ShareDir;
 use Digest::HMAC_SHA1;
+use POSIX ();
 
 use constant +{
     is_development => $ENV{PLACK_ENV} ? $ENV{PLACK_ENV} eq 'development' : 1,
@@ -29,6 +30,21 @@ sub get_path {
 
 sub to_hash {
     Digest::HMAC_SHA1::hmac_sha1_hex(+shift, container('config')->{hash_key});
+}
+
+sub now_db_datetime {
+    state $format_hash = +{
+        mysql  => '%Y-%m-%d %H:%M:%S',
+        sqlite => '%Y-%m-%d %H:%M:%S',
+    };
+    my $driver = shift;
+    my $format = $format_hash->{$driver} or do {
+        require Carp;
+        Carp::croak("$driver is not supported.");
+    };
+
+    local $ENV{TZ} = container('config')->{time_zone};
+    return POSIX::strftime($format, localtime(time));
 }
 
 1;

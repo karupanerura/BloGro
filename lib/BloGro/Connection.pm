@@ -4,9 +4,10 @@ use warnings;
 use utf8;
 
 use BloGro::Container;
-use Scope::Container ();
+use Scope::Container;
 use Scope::Container::DBI;
 use DBIx::Sunny; # for preload
+use AnyEvent::Groonga;
 
 sub import {
     my $class  = shift;
@@ -41,14 +42,26 @@ sub dbh {
 
     my $connect_info = $class->dbh_connect_info($name);
     return Scope::Container::DBI->connect(
-        $connect_info->{dsn},
-        $connect_info->{user},
-        $connect_info->{pass},
-        +{
-            %{ $connect_info->{attr} },
-            RootClass => 'DBIx::Sunny',
-        },
+         $connect_info->{dsn},
+         $connect_info->{user},
+         $connect_info->{pass},
+         +{
+             %{ $connect_info->{attr} },
+             RootClass => 'DBIx::Sunny',
+         }
     );
+}
+
+sub groonga {
+    my $client = scope_container('groonga');
+    return $client if $client;
+
+    $client = AnyEvent::Groonga->new(
+        %{ container('config')->{groonga} }
+    );
+    scope_container('groonga' => $client);
+
+    return $client;
 }
 
 1;

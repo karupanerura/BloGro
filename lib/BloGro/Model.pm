@@ -10,10 +10,11 @@ use BloGro::Connection;
 use SQL::Maker;
 SQL::Maker->load_plugin('InsertMulti');
 
+sub new { shift->instance }
 sub _new_instance {
     my $class = shift;
 
-    $class->new(
+    $class->SUPER::new(
         dbh      => undef, # dummy
         readonly => $class->readonly,
     );
