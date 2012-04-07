@@ -1,5 +1,5 @@
-[% WRAPPER 'include/layout.tt' %]
-
+: cascade layout::main
+: around body -> {
 <div class="row">
     <div class="span10">
         <h1>Hello, Amon2 world!</h1>
@@ -78,5 +78,4 @@
         <p>And there is module specific docs on <a href="https://metacpan.org/release/Amon2">CPAN</a></p>
     </div>
 </section>
-
-[% END %]
+: }

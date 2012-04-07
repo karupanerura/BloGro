@@ -27,7 +27,7 @@ sub config {
             base_url => sub { Amon2->context()->base_url(@_) }
         },
         path   => [ BloGro::Utils::get_path('tmpl') ],
-        suffix => '.html',
+        suffix => '.tx',
     }
 }
 
