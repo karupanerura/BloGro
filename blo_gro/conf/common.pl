@@ -2,6 +2,11 @@ use strict;
 use warnings;
 use utf8;
 
+use File::Spec;
+use File::Basename ();
+my $dir  = File::Basename::dirname(__FILE__);
+my $conf = do(File::Spec->catfile($dir, 'secret.pl')) || +{};
+
 +{
     db => +{
         main => +{
@@ -23,4 +28,5 @@ use utf8;
         port     => '10041',
     },
     time_zone => 'Asia/Tokyo',
+    %$conf,
 };

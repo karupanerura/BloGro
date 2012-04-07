@@ -27,4 +27,15 @@ __PACKAGE__->load_plugins(
     '+BloGro::Plugin::Web::Xslate',
 );
 
+__PACKAGE__->load_plugin('Web::Auth' => +{
+    module => 'Facebook',
+    on_finished => sub {
+        my ($c, $token, $user) = @_;
+        my $name = $user->{name} || die;
+
+        $c->session->options->{change_id}++;
+        return $c->redirect('/');
+    }
+});
+
 1;

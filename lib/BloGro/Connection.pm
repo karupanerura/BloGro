@@ -7,7 +7,6 @@ use BloGro::Container;
 use Scope::Container;
 use Scope::Container::DBI;
 use DBIx::Sunny; # for preload
-use AnyEvent::Groonga;
 
 sub import {
     my $class  = shift;
@@ -56,6 +55,7 @@ sub groonga {
     my $client = scope_container('groonga');
     return $client if $client;
 
+    require AnyEvent::Groonga;
     $client = AnyEvent::Groonga->new(
         %{ container('config')->{groonga} }
     );
