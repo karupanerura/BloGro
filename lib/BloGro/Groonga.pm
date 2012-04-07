@@ -6,6 +6,7 @@ use utf8;
 use 5.10.0;
 
 use BloGro::Connection;
+use BloGro::GroongaQuery;
 use Data::Validator;
 
 sub new         { bless +{} => +shift }
@@ -14,14 +15,15 @@ sub column_list { require Carp; Carp::croak 'this is abstruct method' }
 
 sub search {
     state $rule = Data::Validator->new(
-        query  => 'Str',
-        option => +{ isa => 'HashRef', optional => 1 }
+        cond   => 'HashRef',
+        option => 'HashRef',
     )->with(qw/Method StrictSequenced/);
     my($self, $args) = $rule->validate(@_);
 
+    my $query = BloGro::GroongaQuery->build($args->{cond});
     return connection('groonga')->call(select => +{
         table          => $self->table_name,
-        query          => $args->{query},
+        query          => $query,
         output_columns => $self->column_list,
         exists($args->{option}) ? (
             %{ $args->{option} }
@@ -57,5 +59,6 @@ sub delete {
         key   => $args->{val},
     })->recv;
 }
+
 
 1;

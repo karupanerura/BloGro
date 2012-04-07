@@ -29,7 +29,7 @@ sub fetch {
     )->with(qw/Method/);
     my($self, $args) = $rule->validate(@_);
 
-    my $res = $self->search("_key:$args->{_key}");
+    my $res = $self->search(+{ _key => $args->{_key}}, +{});
     return unless $res;
     return $res->items->[0];
 }
