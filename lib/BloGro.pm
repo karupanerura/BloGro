@@ -8,8 +8,8 @@ use 5.008001;
 
 use BloGro::Utils;
 use BloGro::Connection;
-use BloGro::Container;
+use BloGro::Container ();
 
-sub load_config { container('config') }
+sub load_config { BloGro::Container->instance->get('config') }
 
 1;

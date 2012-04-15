@@ -25,29 +25,35 @@ __PACKAGE__->query(
 sub add {
     state $rule = Data::Validator->new(
         author       => 'Str',
+        service_name => 'Str',
+        service_id   => 'Str',
         profile      => 'HashRef',
         created_at   => +{ isa => 'Str', default => sub { BloGro::Utils::now_db_datetime(__PACKAGE__->driver) } },
     )->with(qw/Method/);
     my($self, $args) = $rule->validate(@_);
 
     my $txn = $self->txn_scope;
-    my $id;
-    try {
+    return try {
         $self->_add(
             author     => $args->{author},
             created_at => $args->{created_at},
         );
-        $id = $self->last_insert_id;
+        my $id = $self->last_insert_id;
+        model('Auth')->add(
+            service_name => $args->{service_name},
+            service_id   => $args->{service_id},
+            author_id    => $id,
+        );
         model('AuthorProfile')->add(%{ $args->{profile} });
         $txn->commit;
+
+        return $id;
     }
     catch {
         my $e = $_;
         $txn->rollback;
         die $e;
     };
-
-    return $id;
 }
 
 __PACKAGE__->select_all(

@@ -1,4 +1,23 @@
 /*
+--- @auth
+認証情報を保存するテーブル。
+BloGroは外部サービスを経由して利用するので、
+そのIDとauthorIDを紐付け出来るようにする必要がある。
+
+SELECT * FROM auth WHERE service_name = 'facebook' AND service_id = '100532035250';
+みたいなクエリを想定している。
+*/
+CREATE TABLE `auth` (
+    id                INTEGER      UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    service_name      VARCHAR(64)  BINARY   NOT NULL COMMENT 'ログインで使用するサービスの名前',
+    service_id        VARCHAR(64)  BINARY   NOT NULL COMMENT 'サービス内で固有のID',
+    author_id         INTEGER      UNSIGNED NOT NULL COMMENT 'id for `author`',
+    created_at        DATETIME              NOT NULL,
+    updated_at        TIMESTAMP             NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY service_login_idx (service_name, service_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='認証情報';
+
+/*
 --- @author
 記事を書く人。
 投稿時にセレクトボックスを出したり、
@@ -7,7 +26,6 @@
 SELECT * FROM author WHERE id = ?;
 みたいなクエリを想定している。
 */
-
 CREATE TABLE `author` (
     id                INTEGER      UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     author            VARCHAR(64)  BINARY   NOT NULL COMMENT '記事を書いた人',
@@ -23,7 +41,6 @@ CREATE TABLE `author` (
 SELECT * FROM author_profile WHERE author_id = ?;
 みたいなクエリを想定している。
 */
-
 CREATE TABLE `author_profile` (
     author_id         INTEGER      UNSIGNED NOT NULL PRIMARY KEY COMMENT 'id from `author`',
     misc_data         TEXT         BINARY   NOT NULL COMMENT 'プロフィール情報'
